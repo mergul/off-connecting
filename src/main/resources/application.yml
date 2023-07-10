@@ -1,0 +1,47 @@
+spring:
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    streams:
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
+            value:
+              default:
+                type: com.busra.connecting.model.RecordSSE
+    producer:
+      properties:
+        spring:
+          json:
+            add:
+              type:
+                headers: false
+            type:
+              mapping: news:com.busra.connecting.model.NewsPayload,user:com.busra.connecting.model.UserPayload,offer:com.busra.connecting.model.OfferPayload
+
+server:
+  port: 8090
+jwt:
+  header: Authorization
+  param: token
+  prefix: Bearer
+topics:
+  kafka:
+    news-in: my-news-topics
+    users-in: my-users-topics
+    reports-in: my-reports-counts
+    auths-out: my-auths-topics
+    pageviews-out: my-pageviews-topics
+    news-out: my-news-topics
+    users-out: my-users-topics
+    reports-out: my-reports-topics
+    listcom-out: my-balanceRecords-topics
+    partitioncom-out: my-partitionCommands-topics
+    paymentcom-out: my-paymentCommands-topics
+    balancecom-out: my-balanceCommands-topics
+    checkout-out: my-usersCheckouts-topics
+    usersHistories-out: my-usersHistories-topics
+    offers-in: my-offers-topics
+    offers-out: my-offers-topics
+    offerviews-out: my-offerviews-topics
