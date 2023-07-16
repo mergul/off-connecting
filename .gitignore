@@ -1,6 +1,7 @@
 HELP.md
 .gradle
 build/
+bin/
 .gradle/
 gradle/
 !gradle/wrapper/gradle-wrapper.jar
