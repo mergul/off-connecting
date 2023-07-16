@@ -80,7 +80,7 @@ public class KStreamConf {
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "connectStreamName");
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.ByteArray().getClass());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, JsonSerde.class);
-        props.put(StreamsConfig.STATE_DIR_CONFIG, "/home/mesut/workspacepool/connecting/data");
+        props.put(StreamsConfig.STATE_DIR_CONFIG, "/data");
 //        props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
         props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 100);
         props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 3);

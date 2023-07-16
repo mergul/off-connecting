@@ -27,18 +27,18 @@ public class KafkaAdminConfig {
     @Value("${topics.kafka.offerviews-out}")
     private String offerviewsTopics;
 
-    @Value("${topics.kafka.listcom-out}")
-    private String listcomTopics;
-    @Value("${topics.kafka.partitioncom-out}")
-    private String partitioncomTopics;
-    @Value("${topics.kafka.paymentcom-out}")
-    private String paymentcomTopics;
-    @Value("${topics.kafka.balancecom-out}")
-    private String balancecomTopics;
-    @Value("${topics.kafka.checkout-out}")
-    private String checkoutTopics;
-    @Value("${topics.kafka.usersHistories-out}")
-    private String usersHistoriesTopics;
+//    @Value("${topics.kafka.listcom-out}")
+//    private String listcomTopics;
+//    @Value("${topics.kafka.partitioncom-out}")
+//    private String partitioncomTopics;
+//    @Value("${topics.kafka.paymentcom-out}")
+//    private String paymentcomTopics;
+//    @Value("${topics.kafka.balancecom-out}")
+//    private String balancecomTopics;
+//    @Value("${topics.kafka.checkout-out}")
+//    private String checkoutTopics;
+//    @Value("${topics.kafka.usersHistories-out}")
+//    private String usersHistoriesTopics;
 
     @Bean
     public KafkaAdmin admin() {
@@ -90,46 +90,46 @@ public class KafkaAdminConfig {
 //                .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
 //                .build();
 //    }
-@Bean
-public NewTopic listTopic() {
-    return TopicBuilder.name(listcomTopics)
-            .partitions(1)
-            .replicas(1)
-//                .compact()
-            .build();
-}
-    @Bean
-    public NewTopic paymentTopic() {
-        return TopicBuilder.name(paymentcomTopics)
-                .partitions(1)
-                .replicas(1)
-//                .compact()
-                .build();
-    }
-    @Bean
-    public NewTopic balanceTopic() {
-        return TopicBuilder.name(balancecomTopics)
-                .partitions(1)
-                .replicas(1)
-//                .compact()
-                .build();
-    }
-    @Bean
-    public NewTopic partitionTopic() {
-        return TopicBuilder.name(partitioncomTopics)
-                .partitions(1)
-                .replicas(1)
-//                .compact()
-                .build();
-    }
-    @Bean
-    public NewTopic historyTopic() {
-        return TopicBuilder.name(usersHistoriesTopics)
-                .partitions(1)
-                .replicas(1)
-//                .compact()
-                .build();
-    }
+//@Bean
+//public NewTopic listTopic() {
+//    return TopicBuilder.name(listcomTopics)
+//            .partitions(1)
+//            .replicas(1)
+////                .compact()
+//            .build();
+//}
+//    @Bean
+//    public NewTopic paymentTopic() {
+//        return TopicBuilder.name(paymentcomTopics)
+//                .partitions(1)
+//                .replicas(1)
+////                .compact()
+//                .build();
+//    }
+//    @Bean
+//    public NewTopic balanceTopic() {
+//        return TopicBuilder.name(balancecomTopics)
+//                .partitions(1)
+//                .replicas(1)
+////                .compact()
+//                .build();
+//    }
+//    @Bean
+//    public NewTopic partitionTopic() {
+//        return TopicBuilder.name(partitioncomTopics)
+//                .partitions(1)
+//                .replicas(1)
+////                .compact()
+//                .build();
+//    }
+//    @Bean
+//    public NewTopic historyTopic() {
+//        return TopicBuilder.name(usersHistoriesTopics)
+//                .partitions(1)
+//                .replicas(1)
+////                .compact()
+//                .build();
+//    }
     @Bean
     public NewTopic offersTopic() {
         return TopicBuilder.name(offerTopics)
@@ -151,12 +151,12 @@ public NewTopic listTopic() {
                 .replicas(1)
                 .build();
     }
-    @Bean
-    public NewTopic checkoutTopic() {
-        return TopicBuilder.name(checkoutTopics)
-                .partitions(1)
-                .replicas(1)
-//                .compact()
-                .build();
-    }
+//    @Bean
+//    public NewTopic checkoutTopic() {
+//        return TopicBuilder.name(checkoutTopics)
+//                .partitions(1)
+//                .replicas(1)
+////                .compact()
+//                .build();
+//    }
 }

@@ -18,18 +18,18 @@ import java.util.*;
 @Component
 public class NewsHandler {
 
-    @Value("${topics.kafka.listcom-out}")
-    private String listcomTopics;
-    @Value("${topics.kafka.partitioncom-out}")
-    private String partitioncomTopics;
-    @Value("${topics.kafka.paymentcom-out}")
-    private String paymentcomTopics;
-    @Value("${topics.kafka.balancecom-out}")
-    private String balancecomTopics;
-    @Value("${topics.kafka.checkout-out}")
-    private String checkoutTopics;
-    @Value("${topics.kafka.usersHistories-out}")
-    private String usersHistoriesTopics;
+//    @Value("${topics.kafka.listcom-out}")
+//    private String listcomTopics;
+//    @Value("${topics.kafka.partitioncom-out}")
+//    private String partitioncomTopics;
+//    @Value("${topics.kafka.paymentcom-out}")
+//    private String paymentcomTopics;
+//    @Value("${topics.kafka.balancecom-out}")
+//    private String balancecomTopics;
+//    @Value("${topics.kafka.checkout-out}")
+//    private String checkoutTopics;
+//    @Value("${topics.kafka.usersHistories-out}")
+//    private String usersHistoriesTopics;
 
     private final UserService userService;
     private final NewsService newsService;
@@ -315,13 +315,13 @@ public class NewsHandler {
         return body.flatMap(commentsFeed -> this.kafkaSender.send("comments-topics", commentsFeed, commentsFeed.getNewsId().getBytes(), false).subscribeOn(Schedulers.boundedElastic()));
     }
 
-    public Mono<Boolean> partitionMoney(Mono<String> para) {
-        // String key = String.valueOf(new Date().getTime());
-        return this.getAuthUser().flatMap(user -> para.map(pa -> Tuples.of(user, pa)))
-                .flatMap(tuple -> this.kafkaSender.send(partitioncomTopics, new PartitionCommand(tuple.getT1().getId().toHexString(), tuple.getT2()), tuple.getT1().getId().toByteArray(), false).subscribeOn(Schedulers.boundedElastic()));
-    }
-    public Mono<Boolean> handlePayments(Mono<List<String>> pa) {
-        String key = String.valueOf(new Date().getTime());
-        return pa.flatMap(val -> this.kafkaSender.send(paymentcomTopics, new PaymentCommand(key, val), key.getBytes(), false).subscribeOn(Schedulers.boundedElastic()));
-    }
+//    public Mono<Boolean> partitionMoney(Mono<String> para) {
+//        // String key = String.valueOf(new Date().getTime());
+//        return this.getAuthUser().flatMap(user -> para.map(pa -> Tuples.of(user, pa)))
+//                .flatMap(tuple -> this.kafkaSender.send(partitioncomTopics, new PartitionCommand(tuple.getT1().getId().toHexString(), tuple.getT2()), tuple.getT1().getId().toByteArray(), false).subscribeOn(Schedulers.boundedElastic()));
+//    }
+//    public Mono<Boolean> handlePayments(Mono<List<String>> pa) {
+//        String key = String.valueOf(new Date().getTime());
+//        return pa.flatMap(val -> this.kafkaSender.send(paymentcomTopics, new PaymentCommand(key, val), key.getBytes(), false).subscribeOn(Schedulers.boundedElastic()));
+//    }
 }

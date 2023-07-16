@@ -30,18 +30,18 @@ topics:
   kafka:
     news-in: my-news-topics
     users-in: my-users-topics
-    reports-in: my-reports-counts
+#    reports-in: my-reports-counts
     auths-out: my-auths-topics
     pageviews-out: my-pageviews-topics
     news-out: my-news-topics
     users-out: my-users-topics
-    reports-out: my-reports-topics
-    listcom-out: my-balanceRecords-topics
-    partitioncom-out: my-partitionCommands-topics
-    paymentcom-out: my-paymentCommands-topics
-    balancecom-out: my-balanceCommands-topics
-    checkout-out: my-usersCheckouts-topics
-    usersHistories-out: my-usersHistories-topics
+#    reports-out: my-reports-topics
+#    listcom-out: my-balanceRecords-topics
+#    partitioncom-out: my-partitionCommands-topics
+#    paymentcom-out: my-paymentCommands-topics
+#    balancecom-out: my-balanceCommands-topics
+#    checkout-out: my-usersCheckouts-topics
+#    usersHistories-out: my-usersHistories-topics
     offers-in: my-offers-topics
     offers-out: my-offers-topics
     offerviews-out: my-offerviews-topics

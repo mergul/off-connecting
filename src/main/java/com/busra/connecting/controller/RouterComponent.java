@@ -173,12 +173,12 @@ public class RouterComponent {
                         .andRoute(RequestPredicates.GET("/rest/news/get/{id}"),
                                 request -> ServerResponse.ok()
                                         .body(newsHandler.getNewsById(request.pathVariable("id")), News.class))
-                        .andRoute(RequestPredicates.POST("/rest/admin/handlePayments"),
-                                request -> ServerResponse.ok()
-                                        .body(newsHandler.handlePayments(request.bodyToMono(new ParameterizedTypeReference<List<String>>() {})), Boolean.class))
-                        .andRoute(RequestPredicates.POST("/rest/admin/partitionMoney"),
-                                request -> ServerResponse.ok()
-                                        .body(newsHandler.partitionMoney(request.bodyToMono(String.class)), Boolean.class))
+//                        .andRoute(RequestPredicates.POST("/rest/admin/handlePayments"),
+//                                request -> ServerResponse.ok()
+//                                        .body(newsHandler.handlePayments(request.bodyToMono(new ParameterizedTypeReference<List<String>>() {})), Boolean.class))
+//                        .andRoute(RequestPredicates.POST("/rest/admin/partitionMoney"),
+//                                request -> ServerResponse.ok()
+//                                        .body(newsHandler.partitionMoney(request.bodyToMono(String.class)), Boolean.class))
 //                        .andRoute(RequestPredicates.GET("/rest/admin/hotBalanceRecords"),
 //                                request -> ServerResponse.ok()
 //                                        .body(newsHandler.hotBalanceRecords(), Boolean.class))
