@@ -1,7 +1,6 @@
 HELP.md
 .gradle
 build/
-bin/
 .gradle/
 gradle/
 !gradle/wrapper/gradle-wrapper.jar
@@ -16,6 +15,9 @@ gradle/
 .settings
 .springBeans
 .sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
 .idea
