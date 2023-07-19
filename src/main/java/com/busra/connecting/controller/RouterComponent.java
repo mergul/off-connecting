@@ -62,9 +62,9 @@ public class RouterComponent {
                                 request -> ServerResponse.ok()
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .body(newsHandler.getOffersList(Arrays.asList(request.pathVariable("ids").split(","))), OfferPayload.class))
-                        .andRoute(RequestPredicates.GET("/rest/news/closeOffer/{id}"),
+                        .andRoute(RequestPredicates.GET("/rest/news/closeOffer/{offerId}"),
                                 request -> ServerResponse.ok()
-                                        .body(newsHandler.closeOfferById(request.pathVariable("id")), Boolean.class))
+                                        .body(newsHandler.closeOfferById(request.pathVariable("offerId")), Boolean.class))
                         .andRoute(RequestPredicates.GET("/rest/news/completeOffer/{newsId}/{offerId}"),
                                 request -> ServerResponse.ok()
                                         .body(newsHandler.completeOffer(request.pathVariable("newsId"),request.pathVariable("offerId")), Boolean.class))
