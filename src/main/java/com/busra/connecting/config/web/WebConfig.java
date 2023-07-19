@@ -19,4 +19,12 @@ public class WebConfig implements WebFluxConfigurer {
     public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
         configurer.defaultCodecs().maxInMemorySize(1024 * 1024 * 1024);
     }
+//    @Bean
+//    @Order(Ordered.HIGHEST_PRECEDENCE)
+//    CharacterEncodingFilter characterEncodingFilter() {
+//        CharacterEncodingFilter filter = new CharacterEncodingFilter();
+//        filter.setEncoding("UTF-8");
+//        filter.setForceEncoding(true);
+//        return filter;
+//    }
 }

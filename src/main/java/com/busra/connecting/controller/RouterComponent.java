@@ -54,7 +54,8 @@ public class RouterComponent {
                                         .body(newsHandler.saveNewsComments(request.body(BodyExtractors.toMono(CommentsFeed.class))), Boolean.class))
                         .andRoute(RequestPredicates.POST("/rest/news/offers"),
                                 request -> ServerResponse.ok()
-                                        .body(newsHandler.saveOfferMetadata(request.body(BodyExtractors.toMono(OfferFeed.class))), Boolean.class))
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .body(newsHandler.saveOfferMetadata(request.body(BodyExtractors.toMono(OfferFeed.class))), IdWrapper.class))
                         .andRoute(RequestPredicates.GET("/rest/news/getOffer/{id}"),
                                 request -> ServerResponse.ok()
                                         .body(newsHandler.getOfferById(request.pathVariable("id")), Offer.class))

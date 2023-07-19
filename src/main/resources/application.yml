@@ -22,6 +22,11 @@ spring:
 
 server:
   port: 8090
+  servlet:
+    encoding:
+      charset: UTF-8
+      force-response: true
+      enabled: true
 jwt:
   header: Authorization
   param: token
@@ -45,3 +50,4 @@ topics:
     offers-in: my-offers-topics
     offers-out: my-offers-topics
     offerviews-out: my-offerviews-topics
+

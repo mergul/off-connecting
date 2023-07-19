@@ -3,7 +3,6 @@ package com.busra.connecting.controller;
 import com.busra.connecting.model.*;
 import com.busra.connecting.service.*;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
@@ -13,6 +12,8 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuples;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 
 @Component
@@ -76,7 +77,7 @@ public class NewsHandler {
                 )
                 .flatMapMany(objects -> Flux.just(objects.getT1(), objects.getT2()));
     }
-    Mono<Boolean> saveOfferMetadata(Mono<OfferFeed> offerFeedMono) {
+    Mono<IdWrapper> saveOfferMetadata(Mono<OfferFeed> offerFeedMono) {
         ObjectId offerId = new ObjectId();
         return getAuthUser().flatMap(user -> offerFeedMono.map(newsFeed -> Offer.of(offerId)
                         .withOwnerId(user.getId().toHexString())
@@ -91,7 +92,7 @@ public class NewsHandler {
                         .withPrice(newsFeed.getPrice())
                         .withMediaReviews(newsFeed.getMediaReviews())
                         .withActive(true).build()))
-                .flatMapMany(this::addOffer).reduce(true, (aLong, aLong2) -> aLong && aLong2);
+                .flatMapMany(this::addOffer).reduce(true, (aLong, aLong2) -> aLong && aLong2).map(vv->new IdWrapper(offerId));
     }
 
     private Flux<Boolean> addOffer(Offer newOffer) {
