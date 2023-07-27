@@ -65,9 +65,10 @@ public class CusAuthConv implements ServerAuthenticationConverter {
                                 this.authToken = token;
                                 return firebaseParser.parseToken(token);
                             })
-                            .map(firebaseTokens->getUserObject(User.of(), firebaseTokens, email, ipAddress, username))
-                            .flatMap(user -> this.getUserMono(user, this.isApplied, ipAddress))
-                            .map(user -> new JwtAuthenticationToken(this.authToken, user, this.authToken, user.getAuthorities()));
+                    .onErrorResume(throwable -> Mono.error(throwable))
+                    .map(firebaseTokens->getUserObject(User.of(), firebaseTokens, email, ipAddress, username))
+                    .flatMap(user -> this.getUserMono(user, this.isApplied, ipAddress))
+                    .map(user -> new JwtAuthenticationToken(this.authToken, user, this.authToken, user.getAuthorities()));
     }
 
     private Mono<User> getUserMono(User user, boolean isApply, String ipAddress) {
