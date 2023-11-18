@@ -1,11 +1,13 @@
 package com.busra.connecting.config.security;
 
-import com.busra.connecting.model.ObjectId;
 import com.busra.connecting.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
@@ -27,14 +29,17 @@ import org.springframework.util.Assert;
 @Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
-public class SecurityConfiguration {
-
-    private final ServerAuthenticationEntryPoint entryPoint = new JwtAuthenticationEntryPoint();
+public class SecConf {
+    private final ObjectMapper objectMapper;
+    private final ServerAuthenticationEntryPoint entryPoint;
 
     private final UserService userDetailsService;
     private final CusAuthConv cusAuthConv;
 
-    public SecurityConfiguration(UserService userDetailsService, CusAuthConv cusAuthConv) {
+
+    public SecConf(ObjectMapper objectMapper, UserService userDetailsService, CusAuthConv cusAuthConv, @Autowired  @Qualifier("entryPoint") ServerAuthenticationEntryPoint entryPoint) {
+        this.objectMapper = objectMapper;
+        this.entryPoint = entryPoint;
         Assert.notNull(userDetailsService, "userDetailsService cannot be null");
         Assert.notNull(cusAuthConv, "customAuthenticationConverter cannot be null");
         this.userDetailsService = userDetailsService;
@@ -52,47 +57,59 @@ public class SecurityConfiguration {
         // Add custom security.
         http.authenticationManager(authenticationManager());
         // Disable authentication for `/resources/**` routes.
-       // http.authorizeExchange().pathMatchers("/resources/**").permitAll();
-       // http.authorizeExchange().pathMatchers("/webjars/**").permitAll();
+        // http.authorizeExchange().pathMatchers("/resources/**").permitAll();
+        // http.authorizeExchange().pathMatchers("/webjars/**").permitAll();
 
         //Disable authentication for `/test/**` routes.
-       // http.authorizeExchange().pathMatchers("/test/**").permitAll();
+        // http.authorizeExchange().pathMatchers("/test/**").permitAll();
 
         // Disable authentication for `/auth/**` routes.
-       // http.authorizeExchange().pathMatchers("/auth/**").permitAll();
+        // http.authorizeExchange().pathMatchers("/auth/**").permitAll();
 
         // Access control for profile pages
         http.authorizeExchange().pathMatchers("/api/rest/user/{username}/{random}").access((authentication, context) ->
-        authentication
-            .map(auth -> auth.getName().equals(context.getVariables().get("username").toString()))
-           // .map(username -> username.equals(context.getVariables().get("username").toString()))
-            .map(AuthorizationDecision::new)
-        ); // username.equals((new ObjectId(context.getVariables().get("username").toString().substring(0,12).getBytes())).toHexString()))
+                authentication
+                        .filter(Authentication::isAuthenticated)
+                        .map(auth -> auth.getName().equals(context.getVariables().get("username").toString()))
+                        // .map(username -> username.equals(context.getVariables().get("username").toString()))
+                        .map(AuthorizationDecision::new)
+        );
+        // username.equals((new ObjectId(context.getVariables().get("username").toString().substring(0,12).getBytes())).toHexString()))
         http.authorizeExchange().pathMatchers(HttpMethod.DELETE).access((authentication, context) ->
                 authentication
-                        .map(auth -> ((UserDetails)auth.getPrincipal()).getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")))
-                       // .map(authorities -> ((UserDetails)authorities).getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")))
+                        .filter(Authentication::isAuthenticated)
+                        .map(auth -> ((UserDetails) auth.getPrincipal()).getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")))
+                        // .map(authorities -> ((UserDetails)authorities).getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")))
                         .map(AuthorizationDecision::new)
         );
         http.authorizeExchange().pathMatchers(HttpMethod.PUT).access((authentication, context) ->
                 authentication
-                        .map(auth -> ((UserDetails)auth.getPrincipal()).getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))||((UserDetails)auth.getPrincipal()).getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")))
-                       // .map(authorities -> authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))||authorities.contains(new SimpleGrantedAuthority("ROLE_USER")))
+                        .filter(Authentication::isAuthenticated)
+                        .map(auth -> ((UserDetails) auth.getPrincipal()).getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) || ((UserDetails) auth.getPrincipal()).getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")))
+                        // .map(authorities -> authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))||authorities.contains(new SimpleGrantedAuthority("ROLE_USER")))
                         .map(AuthorizationDecision::new)
         );
-       // http.securityContextRepository(securityContextRepository());
-        http.authorizeExchange().pathMatchers(HttpMethod.GET,"/**").permitAll();
+        // http.securityContextRepository(securityContextRepository());
+        http.authorizeExchange().pathMatchers(HttpMethod.GET, "/**").permitAll();
 
-        http.authorizeExchange().anyExchange().authenticated();
-        //.and().httpBasic().disable();
-
+        http.authorizeExchange().anyExchange().authenticated()
+                //.and().httpBasic().disable();
+                .and()
+                .exceptionHandling()
+//                .authenticationEntryPoint((swe, e) -> {
+//                  //  logger.info("[1] Authentication error: Unauthorized[401]: " + e.getMessage());
+//
+//                    return Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED));
+//                });
+                .authenticationEntryPoint(this.entryPoint).and();
+       // http.exceptionHandling().authenticationEntryPoint(this.entryPoint).and();
         http.addFilterAt(apiAuthenticationWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
         // .httpBasic().disable().csrf().disable();
 
         return http.build();
     }
-
-    private ReactiveAuthenticationManager authenticationManager() {
+    @Bean
+    public ReactiveAuthenticationManager authenticationManager() {
         return new CustomReactiveAuthenticationManager(this.userDetailsService);
     }
 
@@ -100,8 +117,9 @@ public class SecurityConfiguration {
         try {
             AuthenticationWebFilter apiAuthenticationWebFilter = new AuthenticationWebFilter(authenticationManager());
             apiAuthenticationWebFilter.setAuthenticationFailureHandler(new ServerAuthenticationEntryPointFailureHandler(this.entryPoint));
+            //    apiAuthenticationWebFilter.setAuthenticationFailureHandler((webFilterExchange, exception) -> Mono.error(exception));
             apiAuthenticationWebFilter.setServerAuthenticationConverter(this.cusAuthConv);
-            OrServerWebExchangeMatcher matcher= new OrServerWebExchangeMatcher(
+            OrServerWebExchangeMatcher matcher = new OrServerWebExchangeMatcher(
                     new PathPatternParserServerWebExchangeMatcher("/**", HttpMethod.POST),
                     new PathPatternParserServerWebExchangeMatcher("/**", HttpMethod.PUT),
                     new PathPatternParserServerWebExchangeMatcher("/**", HttpMethod.PATCH),
@@ -110,7 +128,7 @@ public class SecurityConfiguration {
             apiAuthenticationWebFilter.setRequiresAuthenticationMatcher(matcher);
 
             // Setting the Context Repo helped, not sure if I need this
-           // apiAuthenticationWebFilter.setSecurityContextRepository(securityContextRepository());
+            // apiAuthenticationWebFilter.setSecurityContextRepository(securityContextRepository());
 
             return apiAuthenticationWebFilter;
         } catch (Exception e) {

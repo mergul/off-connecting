@@ -1,5 +1,7 @@
 package com.busra.connecting.config.security;
 
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
@@ -16,7 +18,9 @@ public class CustomReactiveAuthenticationManager implements ReactiveAuthenticati
 
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
-        return Mono.just(authentication);
+        return Mono.just(authentication)
+                .filter(Authentication::isAuthenticated)
+                .switchIfEmpty(Mono.error(new AccessDeniedException("Unauthorized user.")));
     }
 
 }

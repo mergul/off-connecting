@@ -15,7 +15,7 @@ public class NewsPayload {
     private ObjectId newsId;
     private String newsOwner;
     private List<String> tags;
-    private List<String> topics;
+    private final List<String> topics;
     private Boolean clean;
     private String newsOwnerId;
     private Date date;

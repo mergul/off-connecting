@@ -21,9 +21,7 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
 })
 @SpringBootApplication
 public class ConnectingApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(ConnectingApplication.class, args);
 	}
-
 }

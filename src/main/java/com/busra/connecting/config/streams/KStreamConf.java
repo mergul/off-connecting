@@ -30,9 +30,8 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
-import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.config.StreamsBuilderFactoryBeanConfigurer;
-import org.springframework.kafka.config.StreamsBuilderFactoryBeanCustomizer;
+import org.springframework.kafka.core.CleanupConfig;
 import org.springframework.kafka.support.converter.ByteArrayJsonMessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
@@ -99,7 +98,7 @@ public class KStreamConf {
 
     @Bean
     public StreamsBuilderFactoryBeanConfigurer configurer() {
-        return fb -> fb.setStateListener((newState, oldState) -> {
+        return streamsBuilderFactoryBean ->  streamsBuilderFactoryBean.setStateListener((newState, oldState) -> {
             if (newState == KafkaStreams.State.RUNNING && oldState == KafkaStreams.State.REBALANCING) {
                 startupLatch.countDown();
             } else if (newState != KafkaStreams.State.RUNNING) {
@@ -107,6 +106,10 @@ public class KStreamConf {
             }
             logger.info("State transition from " + oldState + " to " + newState);
         });
+    }
+    @Bean
+    public StreamsBuilderFactoryBeanConfigurer configurer2() {
+        return streamsBuilderFactoryBean ->  streamsBuilderFactoryBean.setCleanupConfig(new CleanupConfig(true, false));
     }
 
     @Bean

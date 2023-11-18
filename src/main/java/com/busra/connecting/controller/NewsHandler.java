@@ -165,8 +165,8 @@ public class NewsHandler {
                     return Mono.zip(this.userService.completeOffer(user, newsId).subscribeOn(Schedulers.boundedElastic()),
                     this.newsService.completeOffer(news).subscribeOn(Schedulers.boundedElastic()),
                     this.offerService.completeOffer(offer).subscribeOn(Schedulers.boundedElastic()));
-                })
-                .then(Mono.just(true));
+                }).all(objects -> objects.getT1()&&objects.getT2()&&objects.getT3());
+//                .then(Mono.just(true));
 
     }
     public Mono<Boolean> addTag(Mono<UserTag> body, String random) {
@@ -187,9 +187,9 @@ public class NewsHandler {
                         builder.withUsers(followings);
                     }
                     User user= builder.build();
-                    return Mono.zip(this.userService.save(builder.build()).subscribeOn(Schedulers.boundedElastic()),
-                            kafkaSender.send(NewsStreams.AUTHS_OUT, UserPayload.of(user.getId().toHexString()).withTags(isTag ? Collections.singletonList(userTag.getTag()) : Collections.emptyList()).withUsers(isTag ? Collections.emptyList() : Collections.singletonList(userTag.getTag())).withIndex(isTag ? 1 : 2).withRandom(random).withIsAdmin(user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))).build(), user.getId().toHexString().getBytes(), false).subscribeOn(Schedulers.boundedElastic()),
-                            !isTag ? manageFollowers(userTag, true).subscribeOn(Schedulers.boundedElastic()) : Mono.empty().subscribeOn(Schedulers.boundedElastic()));
+                    return Mono.zip(this.userService.save(builder.build()),
+                            kafkaSender.send(NewsStreams.AUTHS_OUT, UserPayload.of(user.getId().toHexString()).withTags(isTag ? Collections.singletonList(userTag.getTag()) : Collections.emptyList()).withUsers(isTag ? Collections.emptyList() : Collections.singletonList(userTag.getTag())).withIndex(isTag ? 1 : 2).withRandom(random).withIsAdmin(user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))).build(), user.getId().toHexString().getBytes(), false),
+                            !isTag ? manageFollowers(userTag, true) : Mono.fromCallable(()->user).subscribeOn(Schedulers.boundedElastic())).map(objects1 -> objects1.getT1().isEnabled()&&objects1.getT2()&&objects1.getT3().isEnabled());
                 })
                 .then(Mono.just(true));
     }
@@ -213,10 +213,10 @@ public class NewsHandler {
                         builder.withUsers(followings);
                     }
                     User user = builder.build();
-                    return Mono.zip(this.userService.save(user).subscribeOn(Schedulers.boundedElastic()), !isTag ?
-                            manageFollowers(objects.getT2(), false).subscribeOn(Schedulers.boundedElastic()) : Mono.empty().subscribeOn(Schedulers.boundedElastic()));
+                    return Mono.zip(this.userService.save(user), !isTag ?
+                            manageFollowers(objects.getT2(), false) : Mono.fromCallable(()->user).subscribeOn(Schedulers.boundedElastic())).map(objects1 -> objects1.getT1().isEnabled()&&objects1.getT2().isEnabled());
                 })
-                    .then(Mono.just(true));
+                       .then(Mono.just(true));
     }
 
     private Mono<User> manageFollowers(UserTag userTag, boolean adding) {
